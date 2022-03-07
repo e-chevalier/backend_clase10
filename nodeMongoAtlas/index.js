@@ -13,15 +13,17 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors("*"))
 
 const PORT = config.port || 5003
-const SERVER = config.server || '127.0.0.1:27017'
-const DATABASE = config.database || 'ecommerce';
+const DB_PASS = config.db_pass
+const DB_DOMAIN = config.db_domain
+const DB_NAME = config.db_name
+const DB_USER = config.db_user
 
 
 serverRoutes(app)
 
 const connectDB = async () => {
     try {
-        const URL = `mongodb://${SERVER}/${DATABASE}`
+        const URL = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_DOMAIN}/${DB_NAME}?retryWrites=true&w=majority`
         const options = { useNewUrlParser: true, useUnifiedTopology: true }
         await mongoose.connect(URL, options)
         console.log('MongoDB connected!!')
@@ -79,12 +81,12 @@ server.on('error', error => console.log(`Error en servidor ${error}`))
 // //console.log(usersA)
 // //console.log("-----------------------------------------------------------------------")
 
-// await model.estudiantes.find().sort({ 'nombre': 1 }).exec()
-//     .then(res => {
-//         console.log("----- a) Los estudiantes ordenados por orden alfabético según sus nombres.")
-//         console.log(res)
-//     })
-//     .catch((error) => console.log(error))
+await model.estudiantes.find().sort({ 'nombre': 1 }).exec()
+    .then(res => {
+        console.log("----- a) Los estudiantes ordenados por orden alfabético según sus nombres.")
+        console.log(res)
+    })
+    .catch((error) => console.log(error))
 
 
 // // console.log(" ----- b) El estudiante más joven.")
@@ -184,48 +186,48 @@ server.on('error', error => console.log(`Error en servidor ${error}`))
 
 
 
-console.log("-- 1) Actualizar el dni del estudiante Lucas Blanco a 20355875")
-let users1 = await model.estudiantes.updateOne({'nombre': 'Lucas', 'apellido': 'Blanco'}, {$set: {'dni': '20355875'}})
-console.log(users1)
-console.log(await model.estudiantes.find({'nombre': 'Lucas', 'apellido': 'Blanco'}))
-console.log("-----------------------------------------------------------------------")
-
-
-//OBS Strict permite el insert de elementos que no complan con el schema 100%
-console.log("-- 2) Agregar un campo 'ingreso' a todos los documentos con el valor false")
-let users2 = await model.estudiantes.updateMany({}, {$set: {ingreso: false}},{ strict: false })
-console.log(users2)
-console.log(await model.estudiantes.find())
-console.log("-----------------------------------------------------------------------")
-
-
-console.log("-- 3) Modificar el valor de ingreso a true para todos los estudiantes que pertenezcan al curso 1A")
-let users3 = await model.estudiantes.updateMany({'curso': '1A'}, {$set: {ingreso: true}},{ strict: false })
-console.log(users3)
-console.log(await model.estudiantes.find({curso: '1A'}))
-console.log("-----------------------------------------------------------------------")
-
-
-console.log("-- 4) Listar los estudiantes que aprobaron (hayan sacado de 4 en adelante) sin los campos de _id y __v")
-let users4 = await model.estudiantes.find({'nota': {$gte: 4}},{'_id': 0, '__v': 0 })
-console.log(users4)
-console.log("-----------------------------------------------------------------------")
-
-
-//OBS: strictQuery: false Permite el casteo de propieades que no esten en el schema
-console.log("-- 5) Listar los estudiantes que posean el campo 'ingreso' en true sin los campos de _id y __v")
-let users5 = await model.estudiantes.find({'ingreso': true} ,{'_id': 0, '__v': 0 }, { strictQuery: false })
-console.log(users5)
-console.log("-----------------------------------------------------------------------")
-
-// // SACAR DE SCHEMA EL UNIQUE DE DNI
-// console.log("-- 6) Borrar de la colección de estudiantes los documentos cuyo campo 'ingreso' esté en true")
-// let users6 = await model.estudiantes.updateMany({'ingreso': true} ,{ $unset: { dni: ""} }, {strictQuery: false })
-// console.log(users6)
+// console.log("-- 1) Actualizar el dni del estudiante Lucas Blanco a 20355875")
+// let users1 = await model.estudiantes.updateOne({'nombre': 'Lucas', 'apellido': 'Blanco'}, {$set: {'dni': '20355875'}})
+// console.log(users1)
+// console.log(await model.estudiantes.find({'nombre': 'Lucas', 'apellido': 'Blanco'}))
 // console.log("-----------------------------------------------------------------------")
 
 
-console.log("-- 7) Listar el contenido de la colección estudiantes utilizando la consola, imprimiendo en cada caso los datos almacenados (sin el campo __v) junto a su fecha de creación obtenida del ObjectID en formato YYYY/MM/DD HH:mm:SS.")
-let users7 = await model.estudiantes.find()
-users7.forEach(e => console.log(`${e} => Fecha de creación: ${e._id.getTimestamp().toLocaleString()}`))
-console.log("-----------------------------------------------------------------------")
+// //OBS Strict permite el insert de elementos que no complan con el schema 100%
+// console.log("-- 2) Agregar un campo 'ingreso' a todos los documentos con el valor false")
+// let users2 = await model.estudiantes.updateMany({}, {$set: {ingreso: false}},{ strict: false })
+// console.log(users2)
+// console.log(await model.estudiantes.find())
+// console.log("-----------------------------------------------------------------------")
+
+
+// console.log("-- 3) Modificar el valor de ingreso a true para todos los estudiantes que pertenezcan al curso 1A")
+// let users3 = await model.estudiantes.updateMany({'curso': '1A'}, {$set: {ingreso: true}},{ strict: false })
+// console.log(users3)
+// console.log(await model.estudiantes.find({curso: '1A'}))
+// console.log("-----------------------------------------------------------------------")
+
+
+// console.log("-- 4) Listar los estudiantes que aprobaron (hayan sacado de 4 en adelante) sin los campos de _id y __v")
+// let users4 = await model.estudiantes.find({'nota': {$gte: 4}},{'_id': 0, '__v': 0 })
+// console.log(users4)
+// console.log("-----------------------------------------------------------------------")
+
+
+// //OBS: strictQuery: false Permite el casteo de propieades que no esten en el schema
+// console.log("-- 5) Listar los estudiantes que posean el campo 'ingreso' en true sin los campos de _id y __v")
+// let users5 = await model.estudiantes.find({'ingreso': true} ,{'_id': 0, '__v': 0 }, { strictQuery: false })
+// console.log(users5)
+// console.log("-----------------------------------------------------------------------")
+
+// // // SACAR DE SCHEMA EL UNIQUE DE DNI
+// // console.log("-- 6) Borrar de la colección de estudiantes los documentos cuyo campo 'ingreso' esté en true")
+// // let users6 = await model.estudiantes.updateMany({'ingreso': true} ,{ $unset: { dni: ""} }, {strictQuery: false })
+// // console.log(users6)
+// // console.log("-----------------------------------------------------------------------")
+
+
+// console.log("-- 7) Listar el contenido de la colección estudiantes utilizando la consola, imprimiendo en cada caso los datos almacenados (sin el campo __v) junto a su fecha de creación obtenida del ObjectID en formato YYYY/MM/DD HH:mm:SS.")
+// let users7 = await model.estudiantes.find()
+// users7.forEach(e => console.log(`${e} => Fecha de creación: ${e._id.getTimestamp().toLocaleString()}`))
+// console.log("-----------------------------------------------------------------------")
